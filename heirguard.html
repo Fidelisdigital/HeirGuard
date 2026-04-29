@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>HeirGuard — Trustless Digital Will Protocol on Canopy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { scroll-behavior: smooth; }
+    body { font-family: 'Space Grotesk', sans-serif; background: #0a0e1a; color: #f0f4ff; overflow-x: hidden; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .bg-card { background: rgba(255, 255, 255, 0.03); }
+    .text-gold { color: #f59e0b; }
+    .border-gold { border-color: #f59e0b; }
+    .bg-gold { background: #f59e0b; }
+    .tab-active { color: #f59e0b; border-bottom: 2px solid #f59e0b; }
+    .tab-inactive { color: #78716c; border-bottom: 2px solid transparent; }
+    input, textarea { transition: all 0.2s; background: #11141f; border: 1px solid rgba(255,255,255,0.08); color: #f0f4ff; }
+    input:focus, textarea:focus { border-color: #f59e0b; outline: none; box-shadow: 0 0 0 2px rgba(245,158,11,0.2); }
+    .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0a0e1a; }
+    ::-webkit-scrollbar-thumb { background: #f59e0b; border-radius: 10px; }
+    .particle { position: absolute; background: #f59e0b; border-radius: 50%; opacity: 0.4; pointer-events: none; animation: floatUp 8s infinite ease-in; }
+    @keyframes floatUp { 0% { transform: translateY(0) scale(0.3); opacity: 0; } 20% { opacity: 0.6; } 80% { opacity: 0.6; } 100% { transform: translateY(-200px) scale(0.8); opacity: 0; } }
+    .ring-animation { animation: rotateRing 20s linear infinite; transform-origin: center; }
+    @keyframes rotateRing { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body class="bg-[#0a0e1a]">
+
+  <!-- FLOATING PARTICLES -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div class="particle" style="left: 10%; width: 3px; height: 3px; animation-duration: 7s; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 25%; width: 5px; height: 5px; animation-duration: 11s; animation-delay: 2s;"></div>
+    <div class="particle" style="left: 45%; width: 2px; height: 2px; animation-duration: 8s; animation-delay: 1s;"></div>
+    <div class="particle" style="left: 70%; width: 4px; height: 4px; animation-duration: 9s; animation-delay: 0.5s;"></div>
+    <div class="particle" style="left: 85%; width: 3px; height: 3px; animation-duration: 12s; animation-delay: 3s;"></div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="fixed top-0 left-0 w-full z-50 bg-[#0a0e1a]/90 backdrop-blur-md border-b border-[rgba(245,158,11,0.2)]">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <i class="fas fa-shield-alt text-gold text-2xl"></i>
+        <span class="font-mono font-bold text-xl tracking-wider">HEIRGUARD</span>
+      </div>
+      <nav class="flex gap-8 text-sm font-medium">
+        <a href="#home" class="hover:text-gold transition">Home</a>
+        <a href="#howitworks" class="hover:text-gold transition">How It Works</a>
+        <a href="#terminal" class="hover:text-gold transition">Terminal</a>
+      </nav>
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-full border border-white/10">
+          <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+          <span class="font-mono text-xs" id="headerBlockHeight">BLOCK #247</span>
+        </div>
+        <button onclick="document.getElementById('terminal').scrollIntoView({behavior:'smooth'})" class="bg-gold text-black font-bold px-5 py-2 rounded-md text-sm tracking-wide hover:bg-amber-500 transition">Launch Terminal →</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section id="home" class="relative min-h-screen flex items-center pt-28 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center w-full">
+      <div class="space-y-6 z-10">
+        <div class="font-mono text-gold text-xs tracking-[0.2em]">// HEIRGUARD_PROTOCOL</div>
+        <h1 class="text-5xl md:text-7xl font-bold leading-tight">Protect Your<br>Legacy with<br><span class="text-gold">HeirGuard.</span></h1>
+        <p class="text-white/60 text-lg max-w-lg">The world's first trustless digital will protocol. Lock your assets. Set a timer. Your heirs are protected.</p>
+        <div class="flex flex-wrap gap-4 pt-4">
+          <button onclick="document.getElementById('terminal').scrollIntoView({behavior:'smooth'})" class="bg-gold text-black font-bold px-8 py-3 rounded-md flex items-center gap-2 hover:bg-amber-500 transition">Create Protected Will →</button>
+          <button onclick="document.getElementById('howitworks').scrollIntoView({behavior:'smooth'})" class="border border-white/20 px-8 py-3 rounded-md hover:border-gold hover:text-gold transition">How It Works</button>
+        </div>
+        <div class="flex flex-wrap gap-6 pt-8 text-sm font-mono text-white/40">
+          <span>$2.3B lost yearly</span><span>0 Lawyers Needed</span><span>100% On-Chain</span><span>Permanent</span>
+        </div>
+      </div>
+      <div class="relative flex justify-center items-center h-80 lg:h-auto">
+        <div class="absolute w-64 h-64 rounded-full border-2 border-gold/30 ring-animation"></div>
+        <div class="absolute w-48 h-48 rounded-full border-2 border-gold/20 ring-animation" style="animation-direction: reverse; animation-duration: 15s;"></div>
+        <div class="absolute w-80 h-80 rounded-full border border-gold/10 ring-animation" style="animation-duration: 25s;"></div>
+        <div class="relative z-10 bg-black/40 backdrop-blur-sm p-6 rounded-xl border border-white/10 text-center space-y-3">
+          <div class="font-mono text-gold text-xs">// ASSETS_LOCKED</div>
+          <div class="font-mono text-xs text-white/60">// TIMER_ACTIVE</div>
+          <div class="font-mono text-xs text-white/40">// HEIR_PROTECTED</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE PROBLEM -->
+  <section class="py-24 px-6 bg-black/40">
+    <div class="max-w-7xl mx-auto">
+      <div class="font-mono text-gold text-xs tracking-wider mb-4">// THE_PROBLEM</div>
+      <h2 class="text-4xl md:text-5xl font-bold mb-12">Billions in crypto assets are lost forever every year.</h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="bg-card rounded-xl p-6 border-t-4 border-gold"><div class="text-3xl font-bold text-gold">$2.3B+</div><div class="text-white/60 mt-2">lost in crypto per year due to no inheritance plan</div></div>
+        <div class="bg-card rounded-xl p-6 border-t-4 border-gold"><div class="text-3xl font-bold text-gold">No Solution</div><div class="text-white/60 mt-2">Traditional wills cannot transfer crypto assets securely</div></div>
+        <div class="bg-card rounded-xl p-6 border-t-4 border-gold"><div class="text-3xl font-bold text-gold">Until Now</div><div class="text-white/60 mt-2">HeirGuard enforces your wishes automatically on-chain</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="howitworks" class="py-24 px-6">
+    <div class="max-w-7xl mx-auto">
+      <div class="font-mono text-gold text-xs tracking-wider">// HOW_IT_WORKS</div>
+      <h2 class="text-4xl md:text-5xl font-bold mt-2 mb-16">Three Steps to Protect Your Legacy</h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="bg-card p-8 rounded-2xl border border-white/10"><div class="text-7xl font-black text-gold/20 absolute -mt-12 ml-64">01</div><i class="fas fa-lock text-3xl text-gold mb-4"></i><h3 class="text-xl font-bold mb-2">Create Protected Will</h3><p class="text-white/60">Lock your assets, name your heir, set a block timer, leave a final message.</p></div>
+        <div class="bg-card p-8 rounded-2xl border border-white/10"><div class="text-7xl font-black text-gold/20 absolute -mt-12 ml-64">02</div><i class="fas fa-heartbeat text-3xl text-gold mb-4"></i><h3 class="text-xl font-bold mb-2">Stay Active</h3><p class="text-white/60">Reset the timer periodically to prove you are still here. Simple as one transaction.</p></div>
+        <div class="bg-card p-8 rounded-2xl border border-white/10"><div class="text-7xl font-black text-gold/20 absolute -mt-12 ml-64">03</div><i class="fas fa-hand-holding-heart text-3xl text-gold mb-4"></i><h3 class="text-xl font-bold mb-2">Heir Claims</h3><p class="text-white/60">If the timer expires, your designated heir can claim the assets automatically.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TERMINAL SECTION -->
+  <section id="terminal" class="py-24 px-6 bg-[#0a0e1a]">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+        <div class="flex bg-black/40 rounded-full p-1 border border-white/10">
+          <button id="demoModeBtn" class="px-6 py-2 rounded-full text-sm font-bold bg-gold text-black">DEMO MODE</button>
+          <button id="liveModeBtn" class="px-6 py-2 rounded-full text-sm font-bold text-white/60">LIVE MODE</button>
+        </div>
+        <div id="modeBanner" class="text-xs font-mono bg-gold/20 text-gold px-4 py-2 rounded-full">⚡ DEMO MODE — Not connected to chain</div>
+      </div>
+
+      <div class="flex border-b border-white/10 gap-6 text-sm font-mono">
+        <button data-tab="create" class="tab-btn pb-3 tab-active text-gold">📝 Create Will</button>
+        <button data-tab="lookup" class="tab-btn pb-3 tab-inactive">🔍 Lookup Will</button>
+        <button data-tab="actions" class="tab-btn pb-3 tab-inactive">⚡ Actions</button>
+        <button data-tab="livechain" class="tab-btn pb-3 tab-inactive">📡 Live Chain</button>
+      </div>
+
+      <div class="mt-8">
+        <!-- CREATE TAB -->
+        <div id="tab-create" class="tab-content">
+          <div class="grid lg:grid-cols-2 gap-10">
+            <div><div class="font-mono text-gold text-xs">// CREATE_PROTECTED_WILL</div><h3 class="text-2xl font-bold mt-1">Secure your assets on-chain</h3>
+              <div class="space-y-4 mt-6"><input type="text" id="owner" placeholder="Your Wallet Address (0x...)" class="w-full p-3 rounded-lg"><input type="text" id="beneficiary" placeholder="Heir's Wallet Address" class="w-full p-3 rounded-lg"><input type="number" id="amount" placeholder="Amount (CNPY)" class="w-full p-3 rounded-lg"><input type="number" id="timerBlocksInput" placeholder="Timer (Blocks)" class="w-full p-3 rounded-lg"><textarea id="message" rows="3" placeholder="Final Message to Your Heir (max 280 chars)" class="w-full p-3 rounded-lg"></textarea><div class="text-right text-xs text-white/40"><span id="charCount">0</span>/280</div>
+                <div class="flex gap-3"><button id="loadDemoBtn" class="border border-gold text-gold px-4 py-2 rounded-lg w-1/2">LOAD DEMO DATA</button><button id="createWillBtn" class="bg-gold text-black font-bold rounded-lg w-1/2">CREATE PROTECTED WILL →</button></div>
+                <div id="createResultArea" class="mt-4 text-sm"></div>
+              </div>
+            </div>
+            <div class="space-y-6"><div class="font-mono text-gold text-xs">FIELD GUIDE</div>
+              <div class="space-y-3 text-white/70 text-sm"><div><span class="text-gold">Your Wallet Address</span> — You must sign this transaction. Only you can reset the timer.</div><div><span class="text-gold">Heir's Address</span> — Who receives the assets when the timer expires.</div><div><span class="text-gold">Amount (CNPY)</span> — Assets to lock. Deducted from your balance immediately.</div><div><span class="text-gold">Timer (Blocks)</span> — How many blocks until assets become claimable.</div></div>
+              <div class="bg-black/40 p-4 rounded-xl"><div class="font-bold flex gap-2"><i class="fas fa-calculator text-gold"></i>⏱️ BLOCK CALCULATOR</div><div class="grid grid-cols-2 gap-2 text-xs mt-2"><span>100 blocks ≈ 37 min</span><span>1,000 blocks ≈ 6 hr</span><span>10,000 blocks ≈ 2.7 days</span><span>100,000 blocks ≈ 27 days</span></div></div>
+              <div class="bg-gold/5 p-4 rounded-xl border-l-4 border-gold"><i class="fas fa-lightbulb text-gold"></i> 💡 Best Practice: Set a long timer and reset monthly to prove you're alive</div>
+            </div>
+          </div>
+          <div class="mt-12"><h4 class="font-mono text-gold text-xs flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>RECENT PROTECTED WILLS</h4>
+            <div class="overflow-x-auto"><table class="w-full text-left text-sm mt-4"><thead class="border-b border-white/10"><tr><th>ID</th><th>Owner</th><th>Heir</th><th>Amount</th><th>Status</th></tr></thead><tbody id="recentWillsTable"></tbody></table></div>
+          </div>
+        </div>
+
+        <!-- LOOKUP TAB -->
+        <div id="tab-lookup" class="tab-content hidden">
+          <div class="max-w-3xl"><div class="font-mono text-gold text-xs">// HEIRGUARD_INTELLIGENCE</div><h3 class="text-xl font-bold mt-1">Query any protected will by ID</h3>
+            <div class="flex gap-3 mt-6"><input type="number" id="lookupWillId" placeholder="Will ID" class="flex-1 p-3 rounded-lg"><button id="loadDemoLookup" class="border border-gold text-gold px-4 rounded-lg">LOAD DEMO</button><button id="searchWillBtn" class="bg-gold text-black px-6 rounded-lg font-bold">SEARCH →</button></div>
+            <div id="willDetailsCard" class="mt-8 bg-card rounded-xl border border-white/10 p-6 hidden"><div class="flex justify-between"><span class="bg-gold/20 text-gold px-3 py-1 rounded-full text-xs" id="willStatusBadge">ACTIVE 🟢</span><span class="text-white/40 text-xs">Will ID <span id="detailWillId">1</span></span></div><div class="mt-4 grid gap-2"><div><span class="text-white/50">OWNER:</span> <span id="detailOwner" class="font-mono text-sm break-all"></span></div><div><span class="text-white/50">HEIR:</span> <span id="detailBeneficiary" class="font-mono text-sm break-all"></span></div><div><span class="text-white/50">AMOUNT LOCKED:</span> <span id="detailAmount" class="text-gold font-bold"></span></div><div><span class="text-white/50">CREATED AT BLOCK:</span> <span id="detailCreatedBlock"></span></div></div><div class="mt-4"><div class="text-sm font-mono text-gold">TIMER REMAINING</div><div class="w-full bg-white/10 rounded-full h-2 mt-1"><div id="timerProgress" class="bg-gold h-2 rounded-full" style="width: 65%"></div></div><div id="remainingText" class="text-xs text-white/50 mt-1"></div></div><div class="mt-4 p-4 bg-black/40 rounded-lg italic text-gold">"<span id="farewellMsgDisplay"></span>"</div></div>
+            <div id="lookupResultMsg" class="mt-4"></div>
+          </div>
+        </div>
+
+        <!-- ACTIONS TAB -->
+        <div id="tab-actions" class="tab-content hidden">
+          <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-card p-5 rounded-xl border border-white/10"><i class="fas fa-sync-alt text-2xl text-gold"></i><h3 class="font-bold mt-2">RESET TIMER</h3><p class="text-xs text-white/40 mb-2">Prove you're still active</p><input id="resetOwner" placeholder="Owner Address" class="w-full p-2 rounded text-sm mt-2"><input type="number" id="resetWillId" placeholder="Will ID" class="w-full p-2 rounded text-sm mt-2"><button id="resetBtn" class="mt-4 bg-gold/80 text-black w-full py-2 rounded">RESET TIMER →</button><div id="resetResult" class="text-xs mt-2"></div></div>
+            <div class="bg-card p-5 rounded-xl border border-white/10"><i class="fas fa-hand-holding-heart text-2xl text-green-500"></i><h3 class="font-bold mt-2">CLAIM ASSETS</h3><p class="text-xs text-white/40 mb-2">Heir claims after timer expires</p><input id="claimBeneficiaryAddr" placeholder="Heir Address" class="w-full p-2 rounded text-sm mt-2"><input type="number" id="claimWillId" placeholder="Will ID" class="w-full p-2 rounded text-sm mt-2"><button id="claimBtn" class="mt-4 bg-green-600 text-black w-full py-2 rounded">CLAIM ASSETS →</button><div id="claimResult" class="text-xs mt-2"></div></div>
+            <div class="bg-card p-5 rounded-xl border border-white/10"><i class="fas fa-ban text-2xl text-red-500"></i><h3 class="font-bold mt-2">CANCEL WILL</h3><p class="text-xs text-white/40 mb-2">Owner cancels and reclaims</p><input id="cancelOwner" placeholder="Owner Address" class="w-full p-2 rounded text-sm mt-2"><input type="number" id="cancelWillId" placeholder="Will ID" class="w-full p-2 rounded text-sm mt-2"><button id="cancelBtn" class="mt-4 bg-red-600 text-black w-full py-2 rounded">CANCEL WILL →</button><div id="cancelResult" class="text-xs mt-2"></div></div>
+          </div>
+          <div class="mt-12"><h4 class="font-mono text-gold text-xs">RECENT ACTIONS</h4><div id="actionHistory" class="text-xs text-white/40 space-y-1 mt-2"></div></div>
+        </div>
+
+        <!-- LIVE CHAIN TAB -->
+        <div id="tab-livechain" class="tab-content hidden">
+          <div class="grid md:grid-cols-3 gap-4 mb-8"><div class="bg-card p-4 rounded-xl text-center"><div class="text-3xl font-bold text-gold" id="liveBlockHeight">247</div><div>BLOCK HEIGHT 🔴 LIVE</div></div><div class="bg-card p-4 rounded-xl text-center"><div class="text-3xl font-bold text-gold" id="totalWills">3</div><div>TOTAL WILLS</div></div><div class="bg-card p-4 rounded-xl text-center"><div class="text-3xl font-bold text-gold" id="totalLocked">1,750,000</div><div>VALUE LOCKED (CNPY)</div></div></div>
+          <div><h4 class="font-mono text-gold text-xs">BLOCK PRODUCTION</h4><div id="blockList" class="space-y-2 mt-3"></div></div>
+          <div class="mt-8"><h4 class="font-mono text-gold text-xs flex gap-2"><i class="fas fa-circle text-green-500 text-[8px] animate-pulse"></i>LIVE ACTIVITY FEED</h4><div id="activityFeed" class="h-48 overflow-y-auto text-xs space-y-2 mt-2"></div></div>
+          <div class="mt-8 grid grid-cols-2 gap-4 text-xs bg-card p-4 rounded-xl"><div>RPC Endpoint: localhost:50002 ● <span class="text-green-500">CONNECTED</span></div><div>Block Time: ~22 sec/block</div><div>Plugin: go_plugin_contract ● ACTIVE</div><div>Network: Canopy Betanet</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-white/10 py-12 px-6 mt-12"><div class="max-w-7xl mx-auto flex flex-wrap justify-between gap-8 text-sm"><div><i class="fas fa-shield-alt text-gold"></i> <span class="font-bold">HEIRGUARD</span><div class="text-white/40 text-xs mt-2">Built on Canopy Network</div></div><div><span class="font-mono text-gold">Platform</span><div class="text-white/40 text-xs mt-1">Terminal<br>Create Will<br>Lookup Will</div></div><div><span class="font-mono text-gold">Learn</span><div class="text-white/40 text-xs mt-1">How It Works<br>Features<br>FAQ</div></div><div><span class="font-mono text-gold">Chain Status</span><div class="text-xs" id="footerBlockHeight">Block: 247</div></div></div><div class="text-center text-white/30 text-xs mt-12">© 2026 HeirGuard Protocol. All rights reserved. | Built for the decentralized economy.</div></footer>
+
+  <script>
+    let wills = [
+      { id: 1, owner: "0x4907954aad262f49b3b07635df88d0c12db327f6", beneficiary: "0x48729ba3b954d3a479082397cdd8c4968e56b0ab", amount: 1000000, timerBlocks: 100, message: "Take care of the family. The seed phrase is in the red envelope.", createdAt: 12, lastReset: 12, active: true, claimed: false },
+      { id: 2, owner: "0x8a9df28313d813a3095f2d166eb017fbbdb766c7", beneficiary: "0xce9749a65c5cdbbf230bb96e2390304bf0e6acd5", amount: 500000, timerBlocks: 200, message: "For my children's future.", createdAt: 45, lastReset: 45, active: true, claimed: false },
+      { id: 3, owner: "0x1234567890abcdef1234567890abcdef12345678", beneficiary: "0xabcdef1234567890abcdef1234567890abcdef12", amount: 250000, timerBlocks: 500, message: "Support the foundation.", createdAt: 78, lastReset: 78, active: true, claimed: false }
+    ];
+    let actions = [
+      { type: "WILL CREATED", willId: 1, address: "0x4907...327f6", block: 12 },
+      { type: "TIMER RESET", willId: 1, address: "0x4907...327f6", block: 45 },
+      { type: "WILL CREATED", willId: 2, address: "0x8a9d...766c7", block: 45 },
+      { type: "WILL CREATED", willId: 3, address: "0x1234...5678", block: 78 }
+    ];
+    let currentBlockHeight = 247;
+    let nextWillId = 4;
+    let liveMode = false;
+
+    function updateUI() {
+      const tbody = document.getElementById('recentWillsTable');
+      if (tbody) {
+        if (wills.length === 0) tbody.innerHTML = '<tr><td colspan="5" class="text-center text-white/40 py-4">No protected wills created yet</td></tr>';
+        else tbody.innerHTML = wills.slice().reverse().slice(0,5).map(w => `<tr class="border-b border-white/5"><td class="py-2">#${w.id}</td><td class="font-mono text-xs">${w.owner.substring(0,10)}...${w.owner.substring(w.owner.length-6)}</td><td class="font-mono text-xs">${w.beneficiary.substring(0,10)}...${w.beneficiary.substring(w.beneficiary.length-6)}</td><td>${w.amount.toLocaleString()} CNPY</td><td><span class="text-green-500 text-xs">${w.active && !w.claimed ? 'ACTIVE' : w.claimed ? 'CLAIMED' : 'CANCELLED'}</span></td></tr>`).join('');
+      }
+      const actionDiv = document.getElementById('actionHistory');
+      if (actionDiv) actionDiv.innerHTML = actions.slice().reverse().slice(0,5).map(a => `<div class="flex justify-between text-xs py-1 border-b border-white/5"><span>${a.type}</span><span>Will #${a.willId}</span><span>Block ${a.block}</span><span>✅</span></div>`).join('');
+      const feedDiv = document.getElementById('activityFeed');
+      if (feedDiv) feedDiv.innerHTML = actions.slice().reverse().slice(0,5).map(a => `<div class="bg-white/5 p-2 rounded">${a.type === 'WILL CREATED' ? '🟢' : '🔵'} Will #${a.willId} ${a.type} — Block ${a.block}</div>`).join('');
+      document.getElementById('totalWills') && (document.getElementById('totalWills').innerText = wills.length);
+      document.getElementById('totalLocked') && (document.getElementById('totalLocked').innerText = wills.reduce((sum,w) => sum + (w.active && !w.claimed ? w.amount : 0), 0).toLocaleString());
+      updateBlockList();
+    }
+
+    function updateBlockList() {
+      const container = document.getElementById('blockList');
+      if (!container) return;
+      container.innerHTML = [0,1,2,3,4].map(i => `<div class="bg-white/5 p-3 rounded flex justify-between items-center"><span class="font-mono">Block #${currentBlockHeight - i}</span><div class="flex-1 mx-4 h-1.5 bg-white/10 rounded-full overflow-hidden"><div class="bg-gold h-full rounded-full" style="width: ${Math.min(100, (5-i)*20)}%"></div></div><span>${(5-i)} txs</span><i class="fas fa-check-circle text-green-500 ml-2 text-xs"></i></div>`).join('');
+    }
+
+    function updateBlockHeightUI() {
+      document.getElementById('headerBlockHeight').innerText = `BLOCK #${currentBlockHeight}`;
+      document.getElementById('liveBlockHeight') && (document.getElementById('liveBlockHeight').innerText = currentBlockHeight);
+      document.getElementById('footerBlockHeight') && (document.getElementById('footerBlockHeight').innerText = `Block: ${currentBlockHeight}`);
+    }
+
+    function createWill() {
+      const owner = document.getElementById('owner').value.trim();
+      const beneficiary = document.getElementById('beneficiary').value.trim();
+      const amount = parseInt(document.getElementById('amount').value);
+      const timerBlocks = parseInt(document.getElementById('timerBlocksInput').value);
+      const message = document.getElementById('message').value;
+      if (!owner || !beneficiary || !amount || !timerBlocks) {
+        document.getElementById('createResultArea').innerHTML = '<div class="bg-red-500/20 text-red-400 p-3 rounded-lg">❌ Please fill all fields</div>';
+        return;
+      }
+      const newWill = { id: nextWillId++, owner, beneficiary, amount, timerBlocks, message: message || "No message", createdAt: currentBlockHeight, lastReset: currentBlockHeight, active: true, claimed: false };
+      wills.push(newWill);
+      actions.unshift({ type: "WILL CREATED", willId: newWill.id, address: owner.substring(0,10)+"...", block: currentBlockHeight });
+      updateUI();
+      document.getElementById('createResultArea').innerHTML = `<div class="bg-green-500/20 text-green-400 p-3 rounded-lg">✅ Protected Will #${newWill.id} created! ${amount.toLocaleString()} CNPY secured for your heir.</div>`;
+      document.getElementById('owner').value = ''; document.getElementById('beneficiary').value = ''; document.getElementById('amount').value = ''; document.getElementById('timerBlocksInput').value = ''; document.getElementById('message').value = '';
+      setTimeout(() => document.getElementById('createResultArea').innerHTML = '', 3000);
+    }
+
+    function loadDemoData() {
+      document.getElementById('owner').value = "0x4907954aad262f49b3b07635df88d0c12db327f6";
+      document.getElementById('beneficiary').value = "0x48729ba3b954d3a479082397cdd8c4968e56b0ab";
+      document.getElementById('amount').value = "1000000";
+      document.getElementById('timerBlocksInput').value = "100";
+      document.getElementById('message').value = "Take care of the family. The seed phrase is in the red envelope.";
+      document.getElementById('createResultArea').innerHTML = '<div class="bg-gold/20 text-gold p-3 rounded-lg">📋 Demo data loaded. Click CREATE PROTECTED WILL to add it.</div>';
+      setTimeout(() => document.getElementById('createResultArea').innerHTML = '', 3000);
+    }
+
+    function searchWill() {
+      const id = parseInt(document.getElementById('lookupWillId').value);
+      const will = wills.find(w => w.id === id);
+      if (!will) { document.getElementById('lookupResultMsg').innerHTML = '<div class="bg-red-500/20 text-red-400 p-3 rounded-lg">❌ Will not found</div>'; document.getElementById('willDetailsCard').classList.add('hidden'); setTimeout(() => document.getElementById('lookupResultMsg').innerHTML = '', 3000); return; }
+      document.getElementById('willDetailsCard').classList.remove('hidden');
+      document.getElementById('detailWillId').innerText = will.id;
+      document.getElementById('detailOwner').innerText = will.owner;
+      document.getElementById('detailBeneficiary').innerText = will.beneficiary;
+      document.getElementById('detailAmount').innerHTML = `${will.amount.toLocaleString()} CNPY`;
+      document.getElementById('detailCreatedBlock').innerText = will.createdAt;
+      document.getElementById('farewellMsgDisplay').innerText = will.message;
+      const elapsed = currentBlockHeight - will.lastReset;
+      const remaining = Math.max(0, will.timerBlocks - elapsed);
+      const pct = Math.min(100, (elapsed / will.timerBlocks) * 100);
+      document.getElementById('timerProgress').style.width = `${pct}%`;
+      document.getElementById('remainingText').innerHTML = `${remaining} blocks remaining ≈ ${Math.floor(remaining * 22 / 3600)}h ${Math.floor((remaining * 22 % 3600) / 60)}m`;
+      document.getElementById('willStatusBadge').innerHTML = will.active && !will.claimed ? 'ACTIVE 🟢' : (will.claimed ? 'CLAIMED 🟡' : 'CANCELLED 🔴');
+    }
+
+    function resetTimer() {
+      const owner = document.getElementById('resetOwner').value;
+      const id = parseInt(document.getElementById('resetWillId').value);
+      const will = wills.find(w => w.id === id);
+      if (!will || will.owner !== owner) { document.getElementById('resetResult').innerHTML = '<div class="text-red-400">❌ Owner mismatch or will not found</div>'; setTimeout(() => document.getElementById('resetResult').innerHTML = '', 3000); return; }
+      will.lastReset = currentBlockHeight;
+      actions.unshift({ type: "TIMER RESET", willId: id, address: owner.substring(0,10)+"...", block: currentBlockHeight });
+      updateUI();
+      document.getElementById('resetResult').innerHTML = '<div class="text-green-400">✅ Timer reset! Proof of life recorded.</div>';
+      setTimeout(() => document.getElementById('resetResult').innerHTML = '', 3000);
+    }
+
+    function claimWill() {
+      const beneficiary = document.getElementById('claimBeneficiaryAddr').value;
+      const id = parseInt(document.getElementById('claimWillId').value);
+      const will = wills.find(w => w.id === id);
+      if (!will || will.beneficiary !== beneficiary) { document.getElementById('claimResult').innerHTML = '<div class="text-red-400">❌ Heir mismatch or will not found</div>'; setTimeout(() => document.getElementById('claimResult').innerHTML = '', 3000); return; }
+      if (currentBlockHeight - will.lastReset < will.timerBlocks) { document.getElementById('claimResult').innerHTML = '<div class="text-red-400">❌ Timer not expired yet</div>'; setTimeout(() => document.getElementById('claimResult').innerHTML = '', 3000); return; }
+      will.claimed = true; will.active = false;
+      actions.unshift({ type: "ASSETS CLAIMED", willId: id, address: beneficiary.substring(0,10)+"...", block: currentBlockHeight });
+      updateUI();
+      document.getElementById('claimResult').innerHTML = '<div class="text-green-400">✅ Assets claimed successfully by your heir!</div>';
+      setTimeout(() => document.getElementById('claimResult').innerHTML = '', 3000);
+    }
+
+    function cancelWill() {
+      const owner = document.getElementById('cancelOwner').value;
+      const id = parseInt(document.getElementById('cancelWillId').value);
+      const will = wills.find(w => w.id === id);
+      if (!will || will.owner !== owner) { document.getElementById('cancelResult').innerHTML = '<div class="text-red-400">❌ Owner mismatch or will not found</div>'; setTimeout(() => document.getElementById('cancelResult').innerHTML = '', 3000); return; }
+      will.active = false; will.cancelled = true;
+      actions.unshift({ type: "WILL CANCELLED", willId: id, address: owner.substring(0,10)+"...", block: currentBlockHeight });
+      updateUI();
+      document.getElementById('cancelResult').innerHTML = '<div class="text-green-400">✅ Will cancelled! Assets returned to owner.</div>';
+      setTimeout(() => document.getElementById('cancelResult').innerHTML = '', 3000);
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('tab-active', 'text-gold'); b.classList.add('tab-inactive'); });
+        btn.classList.add('tab-active', 'text-gold'); btn.classList.remove('tab-inactive');
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        document.getElementById(`tab-${tab}`).classList.remove('hidden');
+        if (tab === 'livechain') updateBlockList();
+      });
+    });
+
+    document.getElementById('demoModeBtn')?.addEventListener('click', () => { liveMode = false; document.getElementById('demoModeBtn').classList.add('bg-gold','text-black'); document.getElementById('liveModeBtn').classList.remove('bg-gold','text-black'); document.getElementById('modeBanner').innerHTML = '⚡ DEMO MODE — Not connected to chain'; document.getElementById('modeBanner').classList.remove('bg-green-500/20','text-green-500'); document.getElementById('modeBanner').classList.add('bg-gold/20','text-gold'); });
+    document.getElementById('liveModeBtn')?.addEventListener('click', () => { liveMode = true; document.getElementById('liveModeBtn').classList.add('bg-gold','text-black'); document.getElementById('demoModeBtn').classList.remove('bg-gold','text-black'); document.getElementById('modeBanner').innerHTML = '🔴 LIVE MODE — Connected to Canopy chain'; document.getElementById('modeBanner').classList.remove('bg-gold/20','text-gold'); document.getElementById('modeBanner').classList.add('bg-green-500/20','text-green-500'); });
+    document.getElementById('loadDemoBtn')?.addEventListener('click', loadDemoData);
+    document.getElementById('createWillBtn')?.addEventListener('click', createWill);
+    document.getElementById('loadDemoLookup')?.addEventListener('click', () => { document.getElementById('lookupWillId').value = "1"; searchWill(); });
+    document.getElementById('searchWillBtn')?.addEventListener('click', searchWill);
+    document.getElementById('resetBtn')?.addEventListener('click', resetTimer);
+    document.getElementById('claimBtn')?.addEventListener('click', claimWill);
+    document.getElementById('cancelBtn')?.addEventListener('click', cancelWill);
+    document.getElementById('message')?.addEventListener('input', () => document.getElementById('charCount').innerText = document.getElementById('message').value.length);
+    
+    setInterval(() => { if(!liveMode) currentBlockHeight++; updateBlockHeightUI(); updateBlockList(); }, 8000);
+    updateUI(); updateBlockHeightUI();
+  </script>
+</body>
+</html>

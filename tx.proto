@@ -1,0 +1,71 @@
+syntax = "proto3";
+package types;
+option go_package = "github.com/canopy-network/go-plugin/contract";
+import "google/protobuf/any.proto";
+
+message Transaction {
+  string message_type = 1;
+  google.protobuf.Any msg = 2;
+  Signature signature = 3;
+  uint64 created_height = 4;
+  uint64 time = 5;
+  uint64 fee = 6;
+  string memo = 7;
+  uint64 network_id = 8;
+  uint64 chain_id = 9;
+}
+
+message Signature {
+  bytes public_key = 1;
+  bytes signature = 2;
+}
+
+message MessageSend {
+  bytes from_address = 1;
+  bytes to_address = 2;
+  uint64 amount = 3;
+}
+
+message FeeParams {
+  uint64 send_fee = 1;
+}
+
+// ========== WILLCHAIN TRANSACTION TYPES ==========
+
+message MessageCreateWill {
+  bytes owner_address = 1;
+  bytes beneficiary_address = 2;
+  uint64 amount = 3;
+  uint64 timer_blocks = 4;
+  string message = 5;
+}
+
+message MessageResetTimer {
+  bytes owner_address = 1;
+}
+
+message MessageClaimWill {
+  bytes owner_address = 1;
+  bytes beneficiary_address = 2;
+}
+
+message MessageCancelWill {
+  bytes owner_address = 1;
+}
+
+message Will {
+  uint64 id = 1;
+  bytes owner_address = 2;
+  bytes beneficiary_address = 3;
+  uint64 amount = 4;
+  uint64 lock_height = 5;
+  uint64 timer_blocks = 6;
+  uint64 last_reset_height = 7;
+  string message = 8;
+  bool claimed = 9;
+  bool cancelled = 10;
+}
+
+message WillCounter {
+  uint64 count = 1;
+}
