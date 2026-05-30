@@ -30,7 +30,11 @@ message FeeParams {
   uint64 send_fee = 1;
 }
 
-// ========== WILLCHAIN TRANSACTION TYPES ==========
+message MessageFaucet {
+  bytes signer_address = 1;
+  bytes recipient_address = 2;
+  uint64 amount = 3;
+}
 
 message MessageCreateWill {
   bytes owner_address = 1;
@@ -66,6 +70,8 @@ message Will {
   bool cancelled = 10;
 }
 
-message WillCounter {
-  uint64 count = 1;
+message MessageReward {
+  bytes admin_address = 1;
+  bytes recipient_address = 2;
+  uint64 amount = 3;
 }

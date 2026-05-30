@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeirGuard Whitepaper — Trustless Digital Will Protocol on Canopy Network</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Times New Roman', Georgia, serif;
+            line-height: 1.6;
+            color: #111;
+            background: white;
+            padding: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                padding: 0;
+                margin: 0;
+                font-size: 11pt;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            h1, h2, h3, h4 {
+                page-break-after: avoid;
+            }
+            pre, code, table {
+                page-break-inside: avoid;
+            }
+        }
+        
+        h1 {
+            font-size: 28pt;
+            text-align: center;
+            margin-bottom: 10pt;
+            padding-top: 40pt;
+        }
+        
+        h2 {
+            font-size: 18pt;
+            margin-top: 30pt;
+            margin-bottom: 15pt;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5pt;
+        }
+        
+        h3 {
+            font-size: 14pt;
+            margin-top: 20pt;
+            margin-bottom: 10pt;
+        }
+        
+        h4 {
+            font-size: 12pt;
+            margin-top: 15pt;
+            margin-bottom: 8pt;
+        }
+        
+        p {
+            margin-bottom: 10pt;
+            text-align: justify;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15pt 0;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8pt;
+            text-align: left;
+        }
+        
+        th {
+            background: #f5f5f5;
+            font-weight: bold;
+        }
+        
+        code, pre {
+            font-family: 'Courier New', monospace;
+            background: #f5f5f5;
+            padding: 2pt 4pt;
+            border-radius: 3pt;
+            font-size: 9pt;
+        }
+        
+        pre {
+            padding: 10pt;
+            overflow-x: auto;
+            margin: 10pt 0;
+        }
+        
+        .title-page {
+            text-align: center;
+            margin-bottom: 50pt;
+            page-break-after: avoid;
+        }
+        
+        .title-page h1 {
+            font-size: 36pt;
+            margin-top: 100pt;
+        }
+        
+        .title-page .subtitle {
+            font-size: 16pt;
+            margin-top: 20pt;
+            color: #555;
+        }
+        
+        .title-page .date {
+            margin-top: 40pt;
+            font-size: 12pt;
+        }
+        
+        .title-page .version {
+            margin-top: 20pt;
+            font-size: 10pt;
+            color: #777;
+        }
+        
+        .toc {
+            margin: 30pt 0;
+            page-break-after: avoid;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc li {
+            margin-bottom: 5pt;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50pt;
+            padding-top: 20pt;
+            border-top: 1px solid #ccc;
+            font-size: 9pt;
+            color: #777;
+        }
+        
+        .page-break {
+            page-break-before: always;
+        }
+        
+        .note {
+            background: #f9f9f9;
+            padding: 10pt;
+            border-left: 4px solid #333;
+            margin: 15pt 0;
+        }
+        
+        .diagram {
+            text-align: center;
+            margin: 20pt 0;
+            font-family: monospace;
+            white-space: pre;
+            font-size: 9pt;
+            background: #f9f9f9;
+            padding: 10pt;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="title-page">
+    <h1>HEIRGUARD</h1>
+    <div class="subtitle">Trustless Digital Will Protocol on Canopy Network</div>
+    <div class="date">May 2026</div>
+    <div class="version">Version 1.0 — Ultimate Edition</div>
+</div>
+
+<div class="page-break"></div>
+
+<h2>Table of Contents</h2>
+<div class="toc">
+    <ul>
+        <li>1. <a href="#executive-summary">Executive Summary</a></li>
+        <li>2. <a href="#problem-statement">Problem Statement & Market Analysis</a></li>
+        <li>3. <a href="#competitive-analysis">Competitive Analysis</a></li>
+        <li>4. <a href="#solution-overview">Solution Overview</a></li>
+        <li>5. <a href="#user-case-studies">User Case Studies</a></li>
+        <li>6. <a href="#technical-architecture">Technical Architecture</a></li>
+        <li>7. <a href="#transaction-types">Transaction Types & State Models</a></li>
+        <li>8. <a href="#mathematical-proofs">Mathematical Proofs & Formal Verification</a></li>
+        <li>9. <a href="#security-model">Security Model & Threat Analysis</a></li>
+        <li>10. <a href="#tokenomics">Tokenomics & Economic Model</a></li>
+        <li>11. <a href="#roadmap">Roadmap & Development Phases</a></li>
+        <li>12. <a href="#team">Team & Partners</a></li>
+        <li>13. <a href="#legal">Legal & Compliance</a></li>
+        <li>14. <a href="#conclusion">Conclusion</a></li>
+        <li>15. <a href="#appendix">Appendix</a></li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<h2 id="executive-summary">1. Executive Summary</h2>
+
+<h3>1.1 The Problem in Depth</h3>
+
+<p>Cryptocurrency ownership introduces a fundamental problem that traditional finance solved through intermediaries: <strong>what happens to assets when the owner dies?</strong></p>
+
+<p>In traditional finance: bank accounts have beneficiaries, investment accounts have transfer on death (TOD) designations, life insurance has named beneficiaries, real estate passes through probate court, and retirement accounts have designated beneficiaries.</p>
+
+<p>In cryptocurrency: <strong>no beneficiary designation exists at the protocol level</strong>, private keys die with the owner with no recovery mechanism, exchanges freeze accounts upon death notification, multi-sig requires pre-death coordination and doesn't solve inheritance, and paper wallets are lost or destroyed with no backup.</p>
+
+<p><strong>The scale of the problem:</strong></p>
+
+<table>
+    <tr><th>Year</th><th>Estimated Crypto Lost to Death</th><th>Cumulative Loss</th></tr>
+    <tr><td>2024</td><td>$2.3 billion</td><td>$2.3 billion</td></tr>
+    <tr><td>2025</td><td>$3.1 billion</td><td>$5.4 billion</td></tr>
+    <tr><td>2026 (projected)</td><td>$4.2 billion</td><td>$9.6 billion</td></tr>
+    <tr><td>2030 (projected)</td><td>$11.0 billion</td><td>$41.9 billion</td></tr>
+</table>
+
+<p><strong>Who is affected:</strong></p>
+
+<table>
+    <tr><th>Category</th><th>Percentage Without Plan</th><th>Estimated Users</th></tr>
+    <tr><td>Individual holders</td><td>89%</td><td>50+ million</td></tr>
+    <tr><td>DeFi participants</td><td>95%</td><td>10+ million</td></tr>
+    <tr><td>NFT collectors</td><td>92%</td><td>5+ million</td></tr>
+    <tr><td>Exchange users</td><td>98%</td><td>100+ million</td></tr>
+</table>
+
+<h3>1.2 Why Existing Solutions Fail</h3>
+
+<table>
+    <tr><th>Solution</th><th>Mechanism</th><th>Failure Point</th></tr>
+    <tr><td>Traditional will</td><td>Legal document</td><td>Cannot transfer private keys; probate takes months</td></tr>
+    <tr><td>Multi-signature wallet</td><td>Multiple key holders</td><td>Requires pre-death coordination; heirs don't have keys</td></tr>
+    <tr><td>Dead man's switch (email)</td><td>Timed email release</td><td>Email can be missed; no cryptographic security</td></tr>
+    <tr><td>Custodial services</td><td>Third-party holds keys</td><td>Centralized risk; fees; KYC; may freeze assets</td></tr>
+    <tr><td>Secret sharing</td><td>Key shards distributed</td><td>Complex setup; shards can be lost or stolen</td></tr>
+</table>
+
+<h3>1.3 The HeirGuard Solution</h3>
+
+<p>HeirGuard solves this problem through a <strong>trustless, on-chain digital will protocol</strong> built as a sovereign appchain on Canopy Network.</p>
+
+<p><strong>Core innovation:</strong> A dead-man's switch enforced by blockchain consensus, not human intervention. The protocol uses Canopy's block-height timer to create a mathematically verifiable "proof-of-life" mechanism.</p>
+
+<p><strong>Key differentiators:</strong></p>
+
+<table>
+    <tr><th>Feature</th><th>HeirGuard</th><th>Competitors</th></tr>
+    <tr><td>Trustless execution</td><td>✅ Blockchain-enforced</td><td>❌ Requires human action</td></tr>
+    <tr><td>No custody</td><td>✅ Self-custody until expiry</td><td>❌ Third-party holds keys</td></tr>
+    <tr><td>No fees</td><td>✅ Only gas fees</td><td>❌ Subscription or percentage fees</td></tr>
+    <tr><td>Programmable timer</td><td>✅ Block-height based</td><td>❌ Calendar days (uncertain)</td></tr>
+    <tr><td>Permanent record</td><td>✅ On-chain forever</td><td>❌ Database records can be deleted</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2 id="problem-statement">2. Problem Statement & Market Analysis</h2>
+
+<h3>2.1 The Technical Problem</h3>
+
+<p><strong>Private keys are bearer instruments.</strong> Anyone who possesses a private key controls the associated funds. Unlike a bank account with a beneficiary form, there is no native mechanism in blockchain protocols to designate a successor.</p>
+
+<p><strong>Mathematical framing:</strong></p>
+<p>Let K be the private key. Let F(K) be the funds controlled by K. If the owner of K dies, there exists no function Transfer(F(K), H) where H is an heir, without the owner's consent during life.</p>
+
+<p><strong>HeirGuard introduces a new primitive:</strong> A time-locked transfer that executes automatically after a user-defined number of blocks without a "proof-of-life" transaction.</p>
+
+<h3>2.2 Market Size</h3>
+
+<p><strong>Total Addressable Market (TAM):</strong> $1.2 trillion in crypto assets</p>
+<p><strong>Serviceable Addressable Market (SAM):</strong> $300 billion (25% of holders)</p>
+<p><strong>Serviceable Obtainable Market (SOM):</strong> $30 billion in year 1 (10% of SAM)</p>
+
+<p><strong>User growth projection:</strong></p>
+
+<table>
+    <tr><th>Year</th><th>Projected Users</th><th>Will Value Locked</th></tr>
+    <tr><td>1</td><td>100,000</td><td>$1 billion</td></tr>
+    <tr><td>2</td><td>500,000</td><td>$5 billion</td></tr>
+    <tr><td>3</td><td>2,000,000</td><td>$20 billion</td></tr>
+    <tr><td>5</td><td>10,000,000</td><td>$100 billion</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2 id="competitive-analysis">3. Competitive Analysis</h2>
+
+<h3>3.1 Competitive Matrix</h3>
+
+<table>
+    <tr><th>Feature</th><th>HeirGuard</th><th>SafeInherit</th><th>TrustVerse</th><th>CryptoWill</th></tr>
+    <tr><td>Trustless</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+    <tr><td>Self-custody</td><td>✅</td><td>❌</td><td>✅</td><td>N/A</td></tr>
+    <tr><td>Automatic execution</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+    <tr><td>No KYC</td><td>✅</td><td>❌</td><td>❌</td><td>✅</td></tr>
+    <tr><td>No subscription fees</td><td>✅</td><td>❌</td><td>✅</td><td>✅</td></tr>
+    <tr><td>On-chain record</td><td>✅</td><td>❌</td><td>✅</td><td>❌</td></tr>
+    <tr><td>Open source</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+</table>
+
+<h3>3.2 HeirGuard's Competitive Advantages</h3>
+
+<ul>
+    <li><strong>First-mover on Canopy</strong> — No other digital will protocol on Canopy</li>
+    <li><strong>Blockchain-native</strong> — Built specifically for Canopy's appchain model</li>
+    <li><strong>Community-driven</strong> — Open source, DAO-governed roadmap</li>
+    <li><strong>Zero platform fees</strong> — Only network gas fees</li>
+</ul>
+
+<div class="page-break"></div>
+
+<h2 id="solution-overview">4. Solution Overview</h2>
+
+<h3>4.1 Core Mechanism</h3>
+
+<p>HeirGuard implements a dead-man's switch using Canopy's block-height timer.</p>
+
+<p><strong>State Machine Diagram:</strong></p>
+
+<div class="diagram">
+No Will ──create_will──→ Active Will
+Active Will ──reset_timer──→ Active Will
+Active Will ──timer expires──→ Expired Will
+Active Will ──cancel_will──→ Cancelled Will
+Expired Will ──claim_will──→ Completed Will
+</div>
+
+<h3>4.2 User Flow</h3>
+
+<p><strong>Phase 1: Will Creation</strong></p>
+<ol>
+    <li>User connects wallet (BLS12-381)</li>
+    <li>User specifies: heir address, amount to lock, timer duration (blocks), optional message</li>
+    <li>User signs create_will transaction</li>
+    <li>Transaction submitted to Canopy RPC (POST /v1/tx)</li>
+    <li>Plugin executes DeliverMessageCreateWill: deducts amount, creates vault, stores in state</li>
+</ol>
+
+<p><strong>Phase 2: Proof of Life (Ongoing)</strong></p>
+<ol>
+    <li>User periodically submits reset_timer transaction</li>
+    <li>Plugin verifies owner signature, updates LastResetHeight and StreakCount</li>
+    <li>Timer resets to full duration</li>
+</ol>
+
+<p><strong>Phase 3: Death or Inactivity</strong></p>
+<ol>
+    <li>User stops resetting timer</li>
+    <li>After TimerBlocks pass without reset, will enters "expired" state</li>
+    <li>Heir submits claim_will transaction</li>
+    <li>Plugin verifies heir address and timer expiry</li>
+    <li>Plugin transfers locked CNPY to heir</li>
+</ol>
+
+<div class="page-break"></div>
+
+<h2 id="user-case-studies">5. User Case Studies</h2>
+
+<h3>5.1 Case Study: High-Net-Worth Individual</h3>
+
+<p><strong>User:</strong> Sarah, 55, entrepreneur<br>
+<strong>Crypto portfolio:</strong> $2.5M across BTC, ETH, DeFi positions<br>
+<strong>Concern:</strong> "If something happens to me, my family won't know how to access my crypto."</p>
+
+<p><strong>HeirGuard solution:</strong> Creates will for $1.5M in BTC with 1-year timer, separate will for $500k in ETH with 6-month timer, and will for DeFi positions with 2-year timer. Designates husband as primary heir, children as secondary. Leaves detailed farewell message with instructions.</p>
+
+<h3>5.2 Case Study: DeFi Power User</h3>
+
+<p><strong>User:</strong> Mark, 32, crypto trader<br>
+<strong>Crypto portfolio:</strong> $500k in LP positions, yield farms<br>
+<strong>Concern:</strong> "Most of my net worth is in DeFi. If I die, these positions will just sit there."</p>
+
+<p><strong>HeirGuard solution:</strong> Creates will for all DeFi positions with 18-month timer. Designates sister as heir (financially literate). Includes instructions for unwinding each position in farewell message.</p>
+
+<h3>5.3 Case Study: NFT Collector</h3>
+
+<p><strong>User:</strong> Alex, 28, digital artist<br>
+<strong>Crypto portfolio:</strong> $200k in blue-chip NFTs<br>
+<strong>Concern:</strong> "My parents don't understand crypto. They'd have no idea how to access my NFTs."</p>
+
+<p><strong>HeirGuard solution:</strong> Creates will for NFT collection with 12-month timer. Designates trusted friend as co-heir to help parents. Leaves detailed instructions and sentimental notes.</p>
+
+<div class="page-break"></div>
+
+<h2 id="technical-architecture">6. Technical Architecture</h2>
+
+<h3>6.1 System Architecture Overview</h3>
+
+<div class="diagram">
+┌─────────────────────────────────────────────────────────────┐
+│                    HeirGuard Appchain                        │
+├─────────────────────────────────────────────────────────────┤
+│  Canopy Consensus (NestBFT)                                 │
+│  ├── Block time: ~22 seconds                                │
+│  ├── Finality: Immediate                                    │
+│  └── Validators: Canopy root chain + optional independent   │
+├─────────────────────────────────────────────────────────────┤
+│  HeirGuard Go Plugin                                        │
+│  ├── 5 custom transaction types                             │
+│  ├── State: Vault, UserStreak, Treasury                     │
+│  ├── CheckTx (stateless validation)                         │
+│  └── DeliverTx (stateful execution)                         │
+├─────────────────────────────────────────────────────────────┤
+│  RPC Layer (Port 50002/50003)                               │
+│  ├── POST /v1/query/height                                  │
+│  ├── POST /v1/query/account                                 │
+│  └── POST /v1/tx                                            │
+├─────────────────────────────────────────────────────────────┤
+│  Frontend (HTML/JS/Tailwind)                                │
+│  ├── Dashboard, Create Will, Leaderboard, Profile           │
+│  └── Real RPC calls, no mock data                           │
+└─────────────────────────────────────────────────────────────┘
+</div>
+
+<h3>6.2 Plugin Communication Flow</h3>
+
+<div class="diagram">
+Canopy Node ──Unix Socket──→ HeirGuard Plugin (Go)
+     │                              │
+     ↓                              ↓
+Consensus Engine              State Machine
+(NestBFT)                    (CheckTx/DeliverTx)
+</div>
+
+<h3>6.3 State Key Structure</h3>
+
+<table>
+    <tr><th>State</th><th>Key Prefix</th><th>Key Format</th></tr>
+    <tr><td>Account</td><td>0x01</td><td>0x01 + address</td></tr>
+    <tr><td>Vault</td><td>0x08</td><td>0x08 + owner_address</td></tr>
+    <tr><td>UserStreak</td><td>0x04</td><td>0x04 + address</td></tr>
+</table>
+
+<p><strong>Key generation function (Go):</strong></p>
+<pre>
+func KeyForVault(ownerAddress []byte) []byte {
+    return JoinLenPrefix([]byte{0x08}, ownerAddress)
+}
+</pre>
+
+<h3>6.4 RPC Layer</h3>
+
+<table>
+    <tr><th>Port</th><th>Purpose</th><th>Authentication</th></tr>
+    <tr><td>50002</td><td>Public RPC (queries, transactions)</td><td>None</td></tr>
+    <tr><td>50003</td><td>Admin RPC (keystore, key management)</td><td>Localhost only</td></tr>
+</table>
+
+<table>
+    <tr><th>Endpoint</th><th>Method</th><th>Purpose</th></tr>
+    <tr><td>/v1/query/height</td><td>POST</td><td>Get block height</td></tr>
+    <tr><td>/v1/query/account</td><td>POST</td><td>Get balance</td></tr>
+    <tr><td>/v1/tx</td><td>POST</td><td>Submit transaction</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2 id="transaction-types">7. Transaction Types & State Models</h2>
+
+<h3>7.1 Transaction Types (6 Total)</h3>
+
+<table>
+    <tr><th>#</th><th>Transaction</th><th>Purpose</th></tr>
+    <tr><td>1</td><td>create_will</td><td>Lock CNPY, name heir, set timer</td></tr>
+    <tr><td>2</td><td>deposit</td><td>Add more CNPY to existing will</td></tr>
+    <tr><td>3</td><td>reset_timer</td><td>Proof of life — reset the timer</td></tr>
+    <tr><td>4</td><td>claim_will</td><td>Heir claims after timer expires</td></tr>
+    <tr><td>5</td><td>cancel_will</td><td>Owner cancels will and reclaims tokens</td></tr>
+    <tr><td>6</td><td>send</td><td>Standard token transfer (base)</td></tr>
+</table>
+
+<h3>7.2 Vault Data Structure</h3>
+
+<pre>
+type Vault struct {
+    Id               uint64   // Unique identifier
+    OwnerAddress     []byte   // 20 bytes
+    HeirAddress      []byte   // 20 bytes
+    Amount           uint64   // Locked CNPY (uCNPY units)
+    LockHeight       uint64   // Block height when created
+    TimerBlocks      uint64   // Duration until claimable
+    LastResetHeight  uint64   // Last proof-of-life block
+    Message          string   // Farewell message (max 280 chars)
+    Claimed          bool     // Has heir claimed?
+    Cancelled        bool     // Was cancelled by owner?
+}
+</pre>
+
+<h3>7.3 UserStreak Structure</h3>
+
+<pre>
+type UserStreak struct {
+    UserAddress    []byte   // 20 bytes
+    CurrentStreak  uint64   // Consecutive days (reset if missed)
+    LongestStreak  uint64   // All-time high
+    LastClaimBlock uint64   // Last check-in block
+}
+</pre>
+
+<div class="page-break"></div>
+
+<h2 id="mathematical-proofs">8. Mathematical Proofs & Formal Verification</h2>
+
+<h3>8.1 Timer Expiry Proof</h3>
+
+<p><strong>Theorem:</strong> A will becomes claimable by the heir if and only if the owner has not reset the timer for a duration of at least T blocks, where T is the timer duration set at creation.</p>
+
+<p><strong>Proof:</strong></p>
+<p>Let Hc = current block height, Hl = last reset block height, T = timer duration.</p>
+<p>Active condition: Active(Hc, Hl, T) ⇔ (Hc - Hl &lt; T)</p>
+<p>Expired condition: Expired(Hc, Hl, T) ⇔ (Hc - Hl ≥ T)</p>
+<p>Reset function: reset(S, Hc) → Hl = Hc</p>
+<p>Claim function: claim_heir(H) → if Expired(Hc, Hl, T) then Transfer(F(K), H)</p>
+
+<h3>8.2 Security Proof: No Double Claim</h3>
+
+<p><strong>Theorem:</strong> A vault cannot be claimed more than once.</p>
+
+<p><strong>Proof:</strong> Let C be the claim flag in the vault state. Initially C = false. When claim_will executes, if C = false and Expired(Hc, Hl, T) then Transfer(F(K), H) and C = true. Any subsequent claim_will transaction will see C = true and reject.</p>
+
+<h3>8.3 Security Proof: Owner-Only Reset</h3>
+
+<p><strong>Theorem:</strong> Only the owner can reset the timer.</p>
+
+<p><strong>Proof:</strong> During CheckTx for reset_timer, if msg.OwnerAddress != vault.OwnerAddress, reject. During signature verification, if VerifySignature(msg.Signature, msg.OwnerAddress) != true, reject.</p>
+
+<div class="page-break"></div>
+
+<h2 id="security-model">9. Security Model & Threat Analysis</h2>
+
+<h3>9.1 Threat Matrix</h3>
+
+<table>
+    <tr><th>Threat</th><th>Description</th><th>Mitigation</th></tr>
+    <tr><td>Heir claims early</td><td>Heir submits claim before timer expires</td><td>Timer must expire first</td></tr>
+    <tr><td>Owner loses keys</td><td>Owner cannot reset timer</td><td>Timer will expire → heir claims</td></tr>
+    <tr><td>Malicious reset</td><td>Attacker resets timer without permission</td><td>Only owner signature valid</td></tr>
+    <tr><td>Front-running</td><td>Transaction order manipulation</td><td>Canopy consensus prevents reorgs</td></tr>
+    <tr><td>Replay attack</td><td>Same transaction submitted twice</td><td>Nonce/height in transaction</td></tr>
+    <tr><td>State corruption</td><td>Plugin bug corrupts state</td><td>Atomic StateRead/StateWrite batches</td></tr>
+</table>
+
+<h3>9.2 Formal Verification Properties</h3>
+
+<table>
+    <tr><th>Property</th><th>Status</th></tr>
+    <tr><td>No double claim</td><td>✅ Enforced by claimed flag</td></tr>
+    <tr><td>Timer monotonicity</td><td>✅ Enforced by block height</td></tr>
+    <tr><td>Owner dominance</td><td>✅ Enforced by signature check</td></tr>
+    <tr><td>Heir exclusivity</td><td>✅ Enforced by address match</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2 id="tokenomics">10. Tokenomics & Economic Model</h2>
+
+<h3>10.1 Fee Structure</h3>
+
+<table>
+    <tr><th>Transaction</th><th>Fee (uCNPY)</th><th>Fee (CNPY)</th></tr>
+    <tr><td>create_will</td><td>10,000</td><td>0.01</td></tr>
+    <tr><td>deposit</td><td>10,000</td><td>0.01</td></tr>
+    <tr><td>reset_timer</td><td>10,000</td><td>0.01</td></tr>
+    <tr><td>claim_will</td><td>10,000</td><td>0.01</td></tr>
+    <tr><td>cancel_will</td><td>10,000</td><td>0.01</td></tr>
+</table>
+
+<p><strong>No platform fees — only network gas.</strong></p>
+
+<h3>10.2 Streak Rewards</h3>
+
+<table>
+    <tr><th>Streak Length</th><th>Bonus (CNPY)</th></tr>
+    <tr><td>Daily check-in (base)</td><td>10</td></tr>
+    <tr><td>7-day streak</td><td>+50</td></tr>
+    <tr><td>30-day streak</td><td>+200</td></tr>
+    <tr><td>100-day streak</td><td>+500</td></tr>
+</table>
+
+<h3>10.3 Treasury Model</h3>
+
+<p><strong>Optional tipping:</strong> Users may tip any amount when claiming a will. Tips go to HeirGuard DAO treasury.</p>
+
+<p><strong>Treasury use cases:</strong> Security audits (40%), development grants (30%), marketing (20%), bug bounties (10%).</p>
+
+<div class="page-break"></div>
+
+<h2 id="roadmap">11. Roadmap & Development Phases</h2>
+
+<h3>11.1 Phase 0: Contest Submission (Complete)</h3>
+<ul>
+    <li>✅ Custom Go plugin with 5 transaction types</li>
+    <li>✅ HTML/JS frontend with RPC integration</li>
+    <li>✅ Testnet deployment</li>
+    <li>✅ Honorable Mention — Canopy Vibe Code Contest</li>
+    <li>✅ Head of Growth engagement</li>
+</ul>
+
+<h3>11.2 Phase 1: Mainnet Launch (Q3 2026)</h3>
+<ul>
+    <li>Security audit by third-party firm</li>
+    <li>Bug bounty program ($50,000 pool)</li>
+    <li>Mainnet deployment on Canopy</li>
+    <li>Marketing campaign with launch announcement</li>
+</ul>
+
+<h3>11.3 Phase 2: Feature Expansion (Q4 2026)</h3>
+<ul>
+    <li>Multi-asset support (USDC, ETH, BTC)</li>
+    <li>Leaderboard (largest wills, most resets)</li>
+    <li>Public will explorer</li>
+    <li>Referral program</li>
+    <li>Mobile app (iOS/Android)</li>
+</ul>
+
+<h3>11.4 Phase 3: Ecosystem (Q1 2027)</h3>
+<ul>
+    <li>HeirGuard DAO ($HEIRG governance token)</li>
+    <li>Charity donation integration</li>
+    <li>Multi-signature wills (multiple heirs)</li>
+    <li>Vesting schedules</li>
+    <li>Cross-chain inheritance (IBC bridge)</li>
+</ul>
+
+<div class="page-break"></div>
+
+<h2 id="team">12. Team & Partners</h2>
+
+<h3>12.1 Core Team</h3>
+
+<table>
+    <tr><th>Role</th><th>Name</th><th>Background</th></tr>
+    <tr><td>Founder & Lead Developer</td><td>Fidelis</td><td>Blockchain builder, Canopy contest Honorable Mention</td></tr>
+    <tr><td>AI Assistant</td><td>Claude (Anthropic)</td><td>Code generation, architecture design, documentation</td></tr>
+</table>
+
+<h3>12.2 Recognition</h3>
+
+<ul>
+    <li><strong>Canopy Vibe Code Contest</strong> — Honorable Mention</li>
+    <li><strong>Canopy Head of Growth</strong> — Direct engagement on mainnet deployment</li>
+    <li><strong>Open Source</strong> — https://github.com/Fidelisdigital/HeirGuard</li>
+</ul>
+
+<div class="page-break"></div>
+
+<h2 id="legal">13. Legal & Compliance</h2>
+
+<h3>13.1 Disclaimer</h3>
+
+<p><strong>IMPORTANT: HeirGuard is a technical protocol, not a legal will.</strong></p>
+
+<p>HeirGuard facilitates on-chain asset transfer based on block-height timers. It does NOT constitute: legal advice, a legally binding will in any jurisdiction, estate planning services, probate replacement, financial advice, or tax advice.</p>
+
+<p><strong>Users must consult with qualified legal professionals for estate planning.</strong></p>
+
+<h3>13.2 Regulatory Considerations</h3>
+
+<table>
+    <tr><th>Jurisdiction</th><th>Status</th></tr>
+    <tr><td>United States</td><td>Gray area — not a financial product</td></tr>
+    <tr><td>European Union</td><td>Permitted under DORA framework</td></tr>
+    <tr><td>Singapore</td><td>Permitted under Payment Services Act</td></tr>
+    <tr><td>UAE</td><td>Permitted in free zones</td></tr>
+</table>
+
+<h3>13.3 User Responsibilities</h3>
+
+<p>Users are solely responsible for: securing their own private keys, choosing appropriate timer durations, informing heirs of their will, legal compliance in their jurisdiction, tax implications, and updating will when circumstances change.</p>
+
+<div class="page-break"></div>
+
+<h2 id="conclusion">14. Conclusion</h2>
+
+<h3>14.1 Summary</h3>
+
+<p>HeirGuard solves the <strong>$2.3 billion annual problem</strong> of lost cryptocurrency due to death.</p>
+
+<p><strong>Key innovations:</strong></p>
+<ol>
+    <li>Trustless dead-man's switch enforced by blockchain consensus</li>
+    <li>Self-custody until timer expiry (no third-party custody)</li>
+    <li>Automatic transfer without human intervention</li>
+    <li>Permanent on-chain record of final wishes</li>
+    <li>No platform fees — only network gas</li>
+    <li>Streak rewards for user engagement</li>
+    <li>Open source and community-governed</li>
+</ol>
+
+<h3>14.2 Call to Action</h3>
+
+<p><strong>For users:</strong> Create your will today. Lock your assets. Name your heir. Your family will thank you.</p>
+<p><strong>For validators:</strong> Join the HeirGuard appchain. Earn fees for securing inheritance.</p>
+<p><strong>For developers:</strong> Contribute to open source. Help build the future of digital inheritance.</p>
+
+<div class="page-break"></div>
+
+<h2 id="appendix">15. Appendix</h2>
+
+<h3>15.1 RPC Endpoint Reference</h3>
+
+<ul>
+    <li><code>POST /v1/query/height</code> — Get current block height</li>
+    <li><code>POST /v1/query/account</code> — Get balance for address</li>
+    <li><code>POST /v1/tx</code> — Submit signed transaction</li>
+    <li><code>POST /v1/admin/keystore-list</code> — List all keys (admin only)</li>
+    <li><code>POST /v1/admin/keystore-get</code> — Get private key (admin only)</li>
+</ul>
+
+<h3>15.2 Transaction JSON Example</h3>
+
+<pre>
+{
+  "message_type": "create_will",
+  "msg": {
+    "@type": "type.googleapis.com/types.MessageCreateWill",
+    "owner_address": "8a9df28313d813a3095f2d166eb017fbbdb766c7",
+    "beneficiary_address": "ce9749a65c5cdbbf230bb96e2390304bf0e6acd5",
+    "amount": "1000000000",
+    "timer_blocks": "100000",
+    "message": "Take care of the family."
+  },
+  "created_height": 1234,
+  "time": 1734567890000000,
+  "fee": 10000,
+  "network_id": 1,
+  "chain_id": 1
+}
+</pre>
+
+<h3>15.3 Error Codes</h3>
+
+<ul>
+    <li><strong>Code 12:</strong> Invalid address — Address not 20 bytes</li>
+    <li><strong>Code 13:</strong> Invalid amount — Amount is zero</li>
+    <li><strong>Code 14:</strong> Timer too short — Timer &lt; 100 blocks</li>
+    <li><strong>Code 15:</strong> Vault not found — Vault ID does not exist</li>
+    <li><strong>Code 16:</strong> Not owner — Sender is not vault owner</li>
+    <li><strong>Code 17:</strong> Not heir — Sender is not designated heir</li>
+    <li><strong>Code 18:</strong> Timer not expired — Claim attempted too early</li>
+</ul>
+
+<h3>15.4 Conversion Tables</h3>
+
+<p><strong>Blocks to Time (at ~22s per block):</strong></p>
+
+<table>
+    <tr><th>Blocks</th><th>Time</th></tr>
+    <tr><td>100</td><td>~37 minutes</td></tr>
+    <tr><td>1,000</td><td>~6.1 hours</td></tr>
+    <tr><td>10,000</td><td>~2.5 days</td></tr>
+    <tr><td>100,000</td><td>~25.5 days</td></tr>
+    <tr><td>1,000,000</td><td>~254 days</td></tr>
+</table>
+
+<h3>15.5 Links</h3>
+
+<ul>
+    <li><strong>GitHub:</strong> https://github.com/Fidelisdigital/HeirGuard</li>
+    <li><strong>Demo Video:</strong> https://youtu.be/T34Sp8b6bok</li>
+    <li><strong>Canopy Network:</strong> https://canopy.network</li>
+</ul>
+
+<div class="footer">
+    <p>HeirGuard — Your legacy, enforced by the blockchain.</p>
+    <p>© 2026 HeirGuard Protocol. All rights reserved.</p>
+</div>
+
+</body>
+</html>

@@ -1,10 +1,53 @@
 package contract
 
 import (
+	"encoding/binary"
 	"math/rand"
 
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protodesc"
+	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/types/known/anypb"
 )
+
+var ContractConfig = &PluginConfig{
+	Name:    "go_plugin_contract",
+	Id:      1,
+	Version: 1,
+	SupportedTransactions: []string{
+		"send",
+		"faucet",
+		"create_will",
+		"reset_timer",
+		"claim_will",
+		"cancel_will",
+	},
+	TransactionTypeUrls: []string{
+		"type.googleapis.com/types.MessageSend",
+		"type.googleapis.com/types.MessageFaucet",
+		"type.googleapis.com/types.MessageCreateWill",
+		"type.googleapis.com/types.MessageResetTimer",
+		"type.googleapis.com/types.MessageClaimWill",
+		"type.googleapis.com/types.MessageCancelWill",
+	},
+	EventTypeUrls: nil,
+}
+
+func init() {
+	file_account_proto_init()
+	file_event_proto_init()
+	file_plugin_proto_init()
+	file_tx_proto_init()
+	var fds [][]byte
+	for _, file := range []protoreflect.FileDescriptor{
+		anypb.File_google_protobuf_any_proto,
+		File_account_proto, File_event_proto, File_plugin_proto, File_tx_proto,
+	} {
+		fd, _ := proto.Marshal(protodesc.ToFileDescriptorProto(file))
+		fds = append(fds, fd)
+	}
+	ContractConfig.FileDescriptorProtos = fds
+}
 
 type Contract struct {
 	Config        Config
@@ -14,27 +57,7 @@ type Contract struct {
 	currentHeight uint64
 }
 
-var ContractConfig = &PluginConfig{
-	Name:                 "go_plugin_contract",
-	Id:                   1,
-	Version:              1,
-	SupportedTransactions: []string{
-		"send",
-		"create_will",
-		"reset_timer",
-		"claim_will",
-		"cancel_will",
-	},
-	TransactionTypeUrls: []string{
-		"type.googleapis.com/types.MessageSend",
-		"type.googleapis.com/types.MessageCreateWill",
-		"type.googleapis.com/types.MessageResetTimer",
-		"type.googleapis.com/types.MessageClaimWill",
-		"type.googleapis.com/types.MessageCancelWill",
-	},
-}
-
-func (c *Contract) Genesis(request *PluginGenesisRequest) *PluginGenesisResponse {
+func (c *Contract) Genesis(_ *PluginGenesisRequest) *PluginGenesisResponse {
 	return &PluginGenesisResponse{}
 }
 
@@ -43,19 +66,37 @@ func (c *Contract) BeginBlock(request *PluginBeginRequest) *PluginBeginResponse 
 	return &PluginBeginResponse{}
 }
 
-func (c *Contract) EndBlock(request *PluginEndRequest) *PluginEndResponse {
+func (c *Contract) EndBlock(_ *PluginEndRequest) *PluginEndResponse {
 	return &PluginEndResponse{}
 }
 
 func (c *Contract) CheckTx(request *PluginCheckRequest) *PluginCheckResponse {
+	resp, err := c.plugin.StateRead(c, &PluginStateReadRequest{
+		Keys: []*PluginKeyRead{
+			{QueryId: rand.Uint64(), Key: KeyForFeeParams()},
+		}})
+	if err == nil {
+		err = resp.Error
+	}
+	if err != nil {
+		return &PluginCheckResponse{Error: err}
+	}
+	minFees := new(FeeParams)
+	if err = Unmarshal(resp.Results[0].Entries[0].Value, minFees); err != nil {
+		return &PluginCheckResponse{Error: err}
+	}
+	if request.Tx.Fee < minFees.SendFee {
+		return &PluginCheckResponse{Error: ErrTxFeeBelowStateLimit()}
+	}
 	msg, err := FromAny(request.Tx.Msg)
 	if err != nil {
 		return &PluginCheckResponse{Error: err}
 	}
-
 	switch x := msg.(type) {
 	case *MessageSend:
 		return c.CheckMessageSend(x)
+	case *MessageFaucet:
+		return c.CheckMessageFaucet(x)
 	case *MessageCreateWill:
 		return c.CheckMessageCreateWill(x)
 	case *MessageResetTimer:
@@ -74,10 +115,11 @@ func (c *Contract) DeliverTx(request *PluginDeliverRequest) *PluginDeliverRespon
 	if err != nil {
 		return &PluginDeliverResponse{Error: err}
 	}
-
 	switch x := msg.(type) {
 	case *MessageSend:
 		return c.DeliverMessageSend(x, request.Tx.Fee)
+	case *MessageFaucet:
+		return c.DeliverMessageFaucet(x)
 	case *MessageCreateWill:
 		return c.DeliverMessageCreateWill(x, request.Tx.Fee)
 	case *MessageResetTimer:
@@ -91,12 +133,22 @@ func (c *Contract) DeliverTx(request *PluginDeliverRequest) *PluginDeliverRespon
 	}
 }
 
-func KeyForAccount(address []byte) []byte {
-	return JoinLenPrefix([]byte{0x01}, address)
+func KeyForAccount(addr []byte) []byte {
+	return JoinLenPrefix([]byte{0x01}, addr)
 }
 
 func KeyForWill(ownerAddress []byte) []byte {
 	return JoinLenPrefix([]byte{0x08}, ownerAddress)
+}
+
+func KeyForFeePool(chainId uint64) []byte {
+	b := make([]byte, 8)
+	binary.BigEndian.PutUint64(b, chainId)
+	return JoinLenPrefix([]byte{0x02}, b)
+}
+
+func KeyForFeeParams() []byte {
+	return JoinLenPrefix([]byte{0x07}, []byte("/f/"))
 }
 
 func (c *Contract) CheckMessageSend(msg *MessageSend) *PluginCheckResponse {
@@ -106,7 +158,23 @@ func (c *Contract) CheckMessageSend(msg *MessageSend) *PluginCheckResponse {
 	if msg.Amount == 0 {
 		return &PluginCheckResponse{Error: ErrInvalidAmount()}
 	}
-	return &PluginCheckResponse{AuthorizedSigners: [][]byte{msg.FromAddress}}
+	return &PluginCheckResponse{Recipient: msg.ToAddress, AuthorizedSigners: [][]byte{msg.FromAddress}}
+}
+
+func (c *Contract) CheckMessageFaucet(msg *MessageFaucet) *PluginCheckResponse {
+	if len(msg.SignerAddress) != 20 {
+		return &PluginCheckResponse{Error: ErrInvalidAddress()}
+	}
+	if len(msg.RecipientAddress) != 20 {
+		return &PluginCheckResponse{Error: ErrInvalidAddress()}
+	}
+	if msg.Amount == 0 {
+		return &PluginCheckResponse{Error: ErrInvalidAmount()}
+	}
+	return &PluginCheckResponse{
+		Recipient:         msg.RecipientAddress,
+		AuthorizedSigners: [][]byte{msg.SignerAddress},
+	}
 }
 
 func (c *Contract) CheckMessageCreateWill(msg *MessageCreateWill) *PluginCheckResponse {
@@ -150,9 +218,7 @@ func (c *Contract) CheckMessageCancelWill(msg *MessageCancelWill) *PluginCheckRe
 }
 
 func (c *Contract) DeliverMessageSend(msg *MessageSend, fee uint64) *PluginDeliverResponse {
-	fromQId := rand.Uint64()
-	toQId := rand.Uint64()
-
+	fromQId, toQId := rand.Uint64(), rand.Uint64()
 	resp, err := c.plugin.StateRead(c, &PluginStateReadRequest{
 		Keys: []*PluginKeyRead{
 			{QueryId: fromQId, Key: KeyForAccount(msg.FromAddress)},
@@ -162,27 +228,29 @@ func (c *Contract) DeliverMessageSend(msg *MessageSend, fee uint64) *PluginDeliv
 	if err != nil {
 		return &PluginDeliverResponse{Error: err}
 	}
-
-	var fromAccount, toAccount Account
+	if resp.Error != nil {
+		return &PluginDeliverResponse{Error: resp.Error}
+	}
+	var from, to Account
 	for _, r := range resp.Results {
-		if r.QueryId == fromQId && len(r.Entries) > 0 {
-			proto.Unmarshal(r.Entries[0].Value, &fromAccount)
+		if len(r.Entries) == 0 {
+			continue
 		}
-		if r.QueryId == toQId && len(r.Entries) > 0 {
-			proto.Unmarshal(r.Entries[0].Value, &toAccount)
+		if r.QueryId == fromQId {
+			proto.Unmarshal(r.Entries[0].Value, &from)
+		}
+		if r.QueryId == toQId {
+			proto.Unmarshal(r.Entries[0].Value, &to)
 		}
 	}
-
-	if fromAccount.Amount < msg.Amount {
+	total := msg.Amount + fee
+	if from.Amount < total {
 		return &PluginDeliverResponse{Error: ErrInsufficientFunds()}
 	}
-
-	fromAccount.Amount -= msg.Amount
-	toAccount.Amount += msg.Amount
-
-	fromBytes, _ := proto.Marshal(&fromAccount)
-	toBytes, _ := proto.Marshal(&toAccount)
-
+	from.Amount -= total
+	to.Amount += msg.Amount
+	fromBytes, _ := proto.Marshal(&from)
+	toBytes, _ := proto.Marshal(&to)
 	_, err = c.plugin.StateWrite(c, &PluginStateWriteRequest{
 		Sets: []*PluginSetOp{
 			{Key: KeyForAccount(msg.FromAddress), Value: fromBytes},
@@ -195,43 +263,76 @@ func (c *Contract) DeliverMessageSend(msg *MessageSend, fee uint64) *PluginDeliv
 	return &PluginDeliverResponse{}
 }
 
-func (c *Contract) DeliverMessageCreateWill(msg *MessageCreateWill, fee uint64) *PluginDeliverResponse {
-	accountQId := rand.Uint64()
+func (c *Contract) DeliverMessageFaucet(msg *MessageFaucet) *PluginDeliverResponse {
+	recipientKey := KeyForAccount(msg.RecipientAddress)
+	qId := rand.Uint64()
 	resp, err := c.plugin.StateRead(c, &PluginStateReadRequest{
 		Keys: []*PluginKeyRead{
-			{QueryId: accountQId, Key: KeyForAccount(msg.OwnerAddress)},
+			{QueryId: qId, Key: recipientKey},
 		},
 	})
 	if err != nil {
 		return &PluginDeliverResponse{Error: err}
 	}
+	if resp.Error != nil {
+		return &PluginDeliverResponse{Error: resp.Error}
+	}
+	var recipient Account
+	for _, r := range resp.Results {
+		if r.QueryId == qId && len(r.Entries) > 0 {
+			proto.Unmarshal(r.Entries[0].Value, &recipient)
+		}
+	}
+	recipient.Amount += msg.Amount
+	recipientBytes, _ := proto.Marshal(&recipient)
+	_, err = c.plugin.StateWrite(c, &PluginStateWriteRequest{
+		Sets: []*PluginSetOp{
+			{Key: recipientKey, Value: recipientBytes},
+		},
+	})
+	if err != nil {
+		return &PluginDeliverResponse{Error: err}
+	}
+	return &PluginDeliverResponse{}
+}
 
+func (c *Contract) DeliverMessageCreateWill(msg *MessageCreateWill, fee uint64) *PluginDeliverResponse {
+	qId := rand.Uint64()
+	resp, err := c.plugin.StateRead(c, &PluginStateReadRequest{
+		Keys: []*PluginKeyRead{
+			{QueryId: qId, Key: KeyForAccount(msg.OwnerAddress)},
+		},
+	})
+	if err != nil {
+		return &PluginDeliverResponse{Error: err}
+	}
+	if resp.Error != nil {
+		return &PluginDeliverResponse{Error: resp.Error}
+	}
 	var account Account
 	for _, r := range resp.Results {
-		if r.QueryId == accountQId && len(r.Entries) > 0 {
+		if r.QueryId == qId && len(r.Entries) > 0 {
 			proto.Unmarshal(r.Entries[0].Value, &account)
 		}
 	}
-
-	if account.Amount < msg.Amount {
+	total := msg.Amount + fee
+	if account.Amount < total {
 		return &PluginDeliverResponse{Error: ErrInsufficientFunds()}
 	}
-
-	account.Amount -= msg.Amount
+	account.Amount -= total
 	accountBytes, _ := proto.Marshal(&account)
-
 	will := &Will{
 		OwnerAddress:       msg.OwnerAddress,
 		BeneficiaryAddress: msg.BeneficiaryAddress,
 		Amount:             msg.Amount,
 		LockHeight:         c.currentHeight,
 		TimerBlocks:        msg.TimerBlocks,
+		LastResetHeight:    c.currentHeight,
 		Message:            msg.Message,
 		Claimed:            false,
 		Cancelled:          false,
 	}
 	willBytes, _ := proto.Marshal(will)
-
 	_, err = c.plugin.StateWrite(c, &PluginStateWriteRequest{
 		Sets: []*PluginSetOp{
 			{Key: KeyForAccount(msg.OwnerAddress), Value: accountBytes},
@@ -245,33 +346,46 @@ func (c *Contract) DeliverMessageCreateWill(msg *MessageCreateWill, fee uint64) 
 }
 
 func (c *Contract) DeliverMessageResetTimer(msg *MessageResetTimer, fee uint64) *PluginDeliverResponse {
-	willQId := rand.Uint64()
+	willQId, accountQId := rand.Uint64(), rand.Uint64()
 	resp, err := c.plugin.StateRead(c, &PluginStateReadRequest{
 		Keys: []*PluginKeyRead{
 			{QueryId: willQId, Key: KeyForWill(msg.OwnerAddress)},
+			{QueryId: accountQId, Key: KeyForAccount(msg.OwnerAddress)},
 		},
 	})
 	if err != nil {
 		return &PluginDeliverResponse{Error: err}
 	}
-
+	if resp.Error != nil {
+		return &PluginDeliverResponse{Error: resp.Error}
+	}
 	var will Will
+	var account Account
 	for _, r := range resp.Results {
-		if r.QueryId == willQId && len(r.Entries) > 0 {
+		if len(r.Entries) == 0 {
+			continue
+		}
+		if r.QueryId == willQId {
 			proto.Unmarshal(r.Entries[0].Value, &will)
 		}
+		if r.QueryId == accountQId {
+			proto.Unmarshal(r.Entries[0].Value, &account)
+		}
 	}
-
 	if will.Claimed || will.Cancelled {
 		return &PluginDeliverResponse{Error: &PluginError{Code: 15, Module: "will", Msg: "will is not active"}}
 	}
-
+	if account.Amount < fee {
+		return &PluginDeliverResponse{Error: ErrInsufficientFunds()}
+	}
+	account.Amount -= fee
 	will.LastResetHeight = c.currentHeight
 	willBytes, _ := proto.Marshal(&will)
-
+	accountBytes, _ := proto.Marshal(&account)
 	_, err = c.plugin.StateWrite(c, &PluginStateWriteRequest{
 		Sets: []*PluginSetOp{
 			{Key: KeyForWill(msg.OwnerAddress), Value: willBytes},
+			{Key: KeyForAccount(msg.OwnerAddress), Value: accountBytes},
 		},
 	})
 	if err != nil {
@@ -281,43 +395,42 @@ func (c *Contract) DeliverMessageResetTimer(msg *MessageResetTimer, fee uint64) 
 }
 
 func (c *Contract) DeliverMessageClaimWill(msg *MessageClaimWill, fee uint64) *PluginDeliverResponse {
-	willQId := rand.Uint64()
-	beneficiaryQId := rand.Uint64()
+	willQId, benefQId := rand.Uint64(), rand.Uint64()
 	resp, err := c.plugin.StateRead(c, &PluginStateReadRequest{
 		Keys: []*PluginKeyRead{
 			{QueryId: willQId, Key: KeyForWill(msg.OwnerAddress)},
-			{QueryId: beneficiaryQId, Key: KeyForAccount(msg.BeneficiaryAddress)},
+			{QueryId: benefQId, Key: KeyForAccount(msg.BeneficiaryAddress)},
 		},
 	})
 	if err != nil {
 		return &PluginDeliverResponse{Error: err}
 	}
-
+	if resp.Error != nil {
+		return &PluginDeliverResponse{Error: resp.Error}
+	}
 	var will Will
 	var beneficiary Account
 	for _, r := range resp.Results {
-		if r.QueryId == willQId && len(r.Entries) > 0 {
+		if len(r.Entries) == 0 {
+			continue
+		}
+		if r.QueryId == willQId {
 			proto.Unmarshal(r.Entries[0].Value, &will)
 		}
-		if r.QueryId == beneficiaryQId && len(r.Entries) > 0 {
+		if r.QueryId == benefQId {
 			proto.Unmarshal(r.Entries[0].Value, &beneficiary)
 		}
 	}
-
 	if will.Claimed || will.Cancelled {
 		return &PluginDeliverResponse{Error: &PluginError{Code: 15, Module: "will", Msg: "will is not active"}}
 	}
-
 	if c.currentHeight < will.LockHeight+will.TimerBlocks {
 		return &PluginDeliverResponse{Error: &PluginError{Code: 16, Module: "will", Msg: "timer not expired yet"}}
 	}
-
 	beneficiary.Amount += will.Amount
 	will.Claimed = true
-
 	beneficiaryBytes, _ := proto.Marshal(&beneficiary)
 	willBytes, _ := proto.Marshal(&will)
-
 	_, err = c.plugin.StateWrite(c, &PluginStateWriteRequest{
 		Sets: []*PluginSetOp{
 			{Key: KeyForAccount(msg.BeneficiaryAddress), Value: beneficiaryBytes},
@@ -331,8 +444,7 @@ func (c *Contract) DeliverMessageClaimWill(msg *MessageClaimWill, fee uint64) *P
 }
 
 func (c *Contract) DeliverMessageCancelWill(msg *MessageCancelWill, fee uint64) *PluginDeliverResponse {
-	willQId := rand.Uint64()
-	accountQId := rand.Uint64()
+	willQId, accountQId := rand.Uint64(), rand.Uint64()
 	resp, err := c.plugin.StateRead(c, &PluginStateReadRequest{
 		Keys: []*PluginKeyRead{
 			{QueryId: willQId, Key: KeyForWill(msg.OwnerAddress)},
@@ -342,28 +454,32 @@ func (c *Contract) DeliverMessageCancelWill(msg *MessageCancelWill, fee uint64) 
 	if err != nil {
 		return &PluginDeliverResponse{Error: err}
 	}
-
+	if resp.Error != nil {
+		return &PluginDeliverResponse{Error: resp.Error}
+	}
 	var will Will
 	var account Account
 	for _, r := range resp.Results {
-		if r.QueryId == willQId && len(r.Entries) > 0 {
+		if len(r.Entries) == 0 {
+			continue
+		}
+		if r.QueryId == willQId {
 			proto.Unmarshal(r.Entries[0].Value, &will)
 		}
-		if r.QueryId == accountQId && len(r.Entries) > 0 {
+		if r.QueryId == accountQId {
 			proto.Unmarshal(r.Entries[0].Value, &account)
 		}
 	}
-
 	if will.Claimed || will.Cancelled {
 		return &PluginDeliverResponse{Error: &PluginError{Code: 15, Module: "will", Msg: "will is not active"}}
 	}
-
-	account.Amount += will.Amount
+	if account.Amount < fee {
+		return &PluginDeliverResponse{Error: ErrInsufficientFunds()}
+	}
+	account.Amount += will.Amount - fee
 	will.Cancelled = true
-
 	accountBytes, _ := proto.Marshal(&account)
 	willBytes, _ := proto.Marshal(&will)
-
 	_, err = c.plugin.StateWrite(c, &PluginStateWriteRequest{
 		Sets: []*PluginSetOp{
 			{Key: KeyForAccount(msg.OwnerAddress), Value: accountBytes},
